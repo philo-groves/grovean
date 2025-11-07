@@ -13,5 +13,5 @@ jobs:
     # uses: philo-groves/kci/.github/workflows/kernel-tests.yml@v1.0.0
     with:
       rust-toolchain: nightly
-      kboot-features: # ci
+      kboot-features: ci
       # cargo-test-args: '--verbose'  # Optional: add extra args
