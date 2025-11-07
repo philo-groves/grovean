@@ -16,7 +16,7 @@ pic8259 = "0.10.1"
 pc-keyboard = "0.7.0"
 
 [dev-dependencies]
-ktest = { path = "../../../ktest", features = ["limine"] }
+ktest = { version = "0.1.6", features = ["limine"] }
 
 [lib]
 doctest = false # disable doctests and their log outputs (we have no doctests)

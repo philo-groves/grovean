@@ -7,7 +7,7 @@ edition = "2024"
 limine = { workspace = true }
 
 [dev-dependencies]
-ktest = { path = "../../../ktest", features = ["limine"] }
+ktest = { version = "0.1.6", features = ["limine"] }
 
 [lib]
 doctest = false # disable doctests and their log outputs (we have no doctests)
