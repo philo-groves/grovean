@@ -1,0 +1,13 @@
+[package]
+name = "extended-crate"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+limine = { workspace = true }
+
+[dev-dependencies]
+ktest = { path = "../../../ktest", features = ["limine"] }
+
+[lib]
+doctest = false # disable doctests and their log outputs (we have no doctests)

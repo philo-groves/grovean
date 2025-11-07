@@ -1,0 +1,12 @@
+[unstable]
+build-std = ["core", "compiler_builtins", "alloc"]
+build-std-features = ["compiler-builtins-mem"]
+
+[build]
+target = "x86_64-example.json"
+
+[target.'cfg(target_os = "none")']
+# kboot compatibility with `cargo run`
+runner = "kboot --limine"
+# Required for Cargo to pass the correct flags to the linker before running `kboot --limine`
+rustflags = ["-C", "relocation-model=static", "-C", "link-arg=linker/x86_64.ld", "-C", "code-model=kernel"]
