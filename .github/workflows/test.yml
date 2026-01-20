@@ -14,4 +14,4 @@ jobs:
     with:
       rust-toolchain: nightly
       kboot-features: ci
-      # cargo-test-args: '--verbose'  # Optional: add extra args
+      cargo-test-args: '--verbose'  # Optional: add extra args
