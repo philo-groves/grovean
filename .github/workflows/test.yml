@@ -1,0 +1,17 @@
+name: Kernel Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    uses: philo-groves/kci/.github/workflows/kernel-tests.yml@main
+    # Or use a specific version/tag for stability:
+    # uses: philo-groves/kci/.github/workflows/kernel-tests.yml@v1.0.0
+    with:
+      rust-toolchain: nightly
+      kboot-features: ci
+      # cargo-test-args: '--verbose'  # Optional: add extra args
