@@ -1,7 +1,13 @@
 #[cfg(target_arch = "x86_64")]
 use lazy_static::lazy_static;
+#[cfg(target_arch = "aarch64")]
+use lazy_static::lazy_static;
+#[cfg(target_arch = "aarch64")]
+use spin::Mutex;
 #[cfg(target_arch = "x86_64")]
 use spin::Mutex;
+#[cfg(target_arch = "aarch64")]
+use uart_16550::MmioSerialPort;
 #[cfg(target_arch = "x86_64")]
 use uart_16550::SerialPort;
 
@@ -10,6 +16,19 @@ lazy_static! {
   /// A static instance of the serial port interface.
   pub static ref SERIAL1: Mutex<SerialPort> = {
     let mut serial_port = unsafe { SerialPort::new(0x3F8) };
+    serial_port.init();
+    Mutex::new(serial_port)
+  };
+}
+
+#[cfg(target_arch = "aarch64")]
+const UART0_MMIO_BASE: usize = 0x0900_0000;
+
+#[cfg(target_arch = "aarch64")]
+lazy_static! {
+  /// A static instance of the aarch64 memory-mapped serial port interface.
+  pub static ref SERIAL1: Mutex<MmioSerialPort> = {
+    let mut serial_port = unsafe { MmioSerialPort::new(UART0_MMIO_BASE) };
     serial_port.init();
     Mutex::new(serial_port)
   };
@@ -31,7 +50,14 @@ pub fn _print(args: ::core::fmt::Arguments) {
 
 #[doc(hidden)]
 #[cfg(target_arch = "aarch64")]
-pub fn _print(_args: ::core::fmt::Arguments) {}
+pub fn _print(args: ::core::fmt::Arguments) {
+    use core::fmt::Write;
+
+    SERIAL1
+        .lock()
+        .write_fmt(args)
+        .expect("Printing to serial failed");
+}
 
 /// Print to the serial port.
 #[macro_export]

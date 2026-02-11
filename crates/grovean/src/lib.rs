@@ -82,8 +82,8 @@ pub fn hlt_loop() -> ! {
 #[macro_export]
 macro_rules! info {
     ($($arg:tt)*) => {
-        serial_info!($($arg)*);
         fb0_info!($($arg)*);
+        serial_info!($($arg)*);
     };
 }
 
@@ -91,8 +91,8 @@ macro_rules! info {
 #[macro_export]
 macro_rules! info_ln {
     ($($arg:tt)*) => {
-        serial_info_ln!($($arg)*);
         fb0_info_ln!($($arg)*);
+        serial_info_ln!($($arg)*);
     };
 }
 
@@ -100,8 +100,8 @@ macro_rules! info_ln {
 #[macro_export]
 macro_rules! debug {
     ($($arg:tt)*) => {
-        serial_debug!($($arg)*);
         fb0_debug!($($arg)*);
+        serial_debug!($($arg)*);
     };
 }
 
@@ -109,8 +109,8 @@ macro_rules! debug {
 #[macro_export]
 macro_rules! debug_ln {
     ($($arg:tt)*) => {
-        serial_debug_ln!($($arg)*);
         fb0_debug_ln!($($arg)*);
+        serial_debug_ln!($($arg)*);
     };
 }
 
@@ -118,8 +118,8 @@ macro_rules! debug_ln {
 #[macro_export]
 macro_rules! warn {
     ($($arg:tt)*) => {
-        serial_warn!($($arg)*);
         fb0_warn!($($arg)*);
+        serial_warn!($($arg)*);
     };
 }
 
@@ -127,8 +127,8 @@ macro_rules! warn {
 #[macro_export]
 macro_rules! warn_ln {
     ($($arg:tt)*) => {
-        serial_warn_ln!($($arg)*);
         fb0_warn_ln!($($arg)*);
+        serial_warn_ln!($($arg)*);
     };
 }
 
@@ -136,8 +136,8 @@ macro_rules! warn_ln {
 #[macro_export]
 macro_rules! danger {
     ($($arg:tt)*) => {
-        serial_danger!($($arg)*);
         fb0_danger!($($arg)*);
+        serial_danger!($($arg)*);
     };
 }
 
@@ -145,8 +145,8 @@ macro_rules! danger {
 #[macro_export]
 macro_rules! danger_ln {
     ($($arg:tt)*) => {
-        serial_danger_ln!($($arg)*);
         fb0_danger_ln!($($arg)*);
+        serial_danger_ln!($($arg)*);
     };
 }
 
