@@ -14,5 +14,4 @@ jobs:
       targets: |
         linker/x86_64-grovean.json
         linker/aarch64-grovean.json
-      kboot-features: ci
       cargo-test-args: --verbose
