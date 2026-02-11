@@ -28,16 +28,7 @@ kunit = "0.1.0"
 doctest = false # disable doctests and their log outputs (we have no doctests)
 
 [[bin]]
-name = "gk"
-path = "src/bin/gk.rs"
+name = "grovean"
+path = "src/bin/grovean.rs"
 test = false
 bench = false
-
-[profile.dev]
-panic ="abort"
-
-[profile.release]
-panic ="abort"
-
-[profile.test]
-panic ="abort"

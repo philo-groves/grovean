@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: grovean <build|run|test> [cargo-args...] <--86_64|--x86_64|--aarch64> [...]
+
+Examples:
+  grovean build --86_64
+  grovean run --aarch64
+  grovean test --86_64 -p crate_name
+  grovean build --86_64 --aarch64
+EOF
+}
+
+if [[ $# -lt 2 ]]; then
+  usage
+  exit 1
+fi
+
+command="$1"
+shift
+
+case "$command" in
+  build|run|test) ;;
+  *)
+    echo "Error: unsupported command '$command'. Expected one of: build, run, test." >&2
+    usage
+    exit 1
+    ;;
+esac
+
+architectures=()
+cargo_args=()
+
+for arg in "$@"; do
+  case "$arg" in
+    --86_64|--x86_64)
+      if [[ ! " ${architectures[*]} " =~ " x86_64 " ]]; then
+        architectures+=("x86_64")
+      fi
+      ;;
+    --aarch64)
+      if [[ ! " ${architectures[*]} " =~ " aarch64 " ]]; then
+        architectures+=("aarch64")
+      fi
+      ;;
+    *)
+      cargo_args+=("$arg")
+      ;;
+  esac
+done
+
+if [[ ${#architectures[@]} -eq 0 ]]; then
+  echo "Error: at least one architecture must be supplied (--86_64/--x86_64 or --aarch64)." >&2
+  usage
+  exit 1
+fi
+
+for arch in "${architectures[@]}"; do
+  echo "==> cargo $command --target linker/${arch}-grovean.json"
+  cargo "$command" "${cargo_args[@]}" --target "linker/${arch}-grovean.json"
+done
