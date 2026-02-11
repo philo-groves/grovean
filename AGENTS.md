@@ -39,7 +39,9 @@ Keep this file current as source-of-truth guidance for future sessions.
 
 ## Direct Cargo Fallback
 - Build: `cargo build --target linker/<arch>-grovean.json`
+- Check: `cargo check --target linker/<arch>-grovean.json`
 - Test: `cargo test --target linker/<arch>-grovean.json`
+- Do not run plain `cargo check` for kernel verification; always pass a valid kernel target JSON.
 - Runner for `target_os = "none"` is configured as `k1` in `.cargo/config.toml`.
 
 ## CI Notes
@@ -65,6 +67,7 @@ Keep this file current as source-of-truth guidance for future sessions.
 ## Engineering Guardrails
 - Cross-arch parity: any memory-management API change should compile for both x86_64 and aarch64.
 - Test expectation: run at least one target locally before finalizing major kernel-memory changes.
+- Boot invariant: initialize and normalize Limine memory map (`grovean::memory::init`) before allocator or paging setup.
 
 ## Auto-Update Protocol (required)
 When any important rule or decision changes, update this file in the same change set.
