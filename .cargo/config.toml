@@ -3,7 +3,7 @@ build-std = ["core", "compiler_builtins", "alloc"]
 build-std-features = ["compiler-builtins-mem"]
 json-target-spec = true
 
-# Optional
+# Optional: Allows cargo command without --target
 #
 # [build]
 # target = "linker/aarch64-grovean.json"
