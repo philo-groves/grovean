@@ -35,7 +35,7 @@ static _END_MARKER: limine::request::RequestsEndMarker = limine::request::Reques
 pub unsafe extern "C" fn _start() -> ! {
     init();
 
-    // fb0_info_ln!("hello framebuffer");
+    info_ln!("hello framebuffer");
 
     hlt_loop()
 }

@@ -12,6 +12,18 @@ static FRAMEBUFFER_REQUEST: FramebufferRequest = FramebufferRequest::new();
 #[used]
 pub static mut FRONT_BUFFER: Option<Framebufferterminal> = None;
 
+pub fn with_front_buffer<F>(f: F)
+where
+    F: FnOnce(&mut Framebufferterminal),
+{
+    let front_buffer = core::ptr::addr_of_mut!(FRONT_BUFFER);
+    unsafe {
+        if let Some(framebuffer) = (*front_buffer).as_mut() {
+            f(framebuffer);
+        }
+    }
+}
+
 /// Initialize the framebuffer terminal
 #[cfg(not(test))]
 pub fn init() {
@@ -137,9 +149,9 @@ impl Framebufferterminal {
 #[macro_export]
 macro_rules! fb0_info {
   ($($arg:tt)*) => {
-    if let Some(fb) = unsafe { $crate::dev::framebuffer::fb0::FRONT_BUFFER.as_mut() } {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
       fb.write_string($($arg)*, $crate::dat::terminal::ON_BACKGROUND);
-    }
+    });
   };
 }
 
@@ -147,9 +159,9 @@ macro_rules! fb0_info {
 #[macro_export]
 macro_rules! fb0_info_ln {
   ($($arg:tt)*) => {
-    if let Some(fb) = unsafe { $crate::dev::framebuffer::fb0::FRONT_BUFFER.as_mut() } {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
       fb.write_line(concat!("INFO: ", $($arg)*), $crate::dat::terminal::ON_BACKGROUND);
-    }
+    });
   };
 }
 
@@ -157,9 +169,9 @@ macro_rules! fb0_info_ln {
 #[macro_export]
 macro_rules! fb0_debug {
   ($($arg:tt)*) => {
-    if let Some(fb) = unsafe { $crate::dev::framebuffer::fb0::FRONT_BUFFER.as_mut() } {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
       fb.write_string($($arg)*, $crate::dat::terminal::ACCENT);
-    }
+    });
   };
 }
 
@@ -167,9 +179,9 @@ macro_rules! fb0_debug {
 #[macro_export]
 macro_rules! fb0_debug_ln {
   ($($arg:tt)*) => {
-    if let Some(fb) = unsafe { $crate::dev::framebuffer::fb0::FRONT_BUFFER.as_mut() } {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
       fb.write_line(concat!("DEBUG: ", $($arg)*), $crate::dat::terminal::ACCENT);
-    }
+    });
   };
 }
 
@@ -177,9 +189,9 @@ macro_rules! fb0_debug_ln {
 #[macro_export]
 macro_rules! fb0_warn {
   ($($arg:tt)*) => {
-    if let Some(fb) = unsafe { $crate::dev::framebuffer::fb0::FRONT_BUFFER.as_mut() } {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
       fb.write_string($($arg)*, $crate::dat::terminal::WARN);
-    }
+    });
   };
 }
 
@@ -187,9 +199,9 @@ macro_rules! fb0_warn {
 #[macro_export]
 macro_rules! fb0_warn_ln {
   ($($arg:tt)*) => {
-    if let Some(fb) = unsafe { $crate::dev::framebuffer::fb0::FRONT_BUFFER.as_mut() } {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
       fb.write_line(concat!("WARN: ", $($arg)*), $crate::dat::terminal::WARN);
-    }
+    });
   };
 }
 
@@ -197,9 +209,9 @@ macro_rules! fb0_warn_ln {
 #[macro_export]
 macro_rules! fb0_danger {
   ($($arg:tt)*) => {
-    if let Some(fb) = unsafe { $crate::dev::framebuffer::fb0::FRONT_BUFFER.as_mut() } {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
       fb.write_string($($arg)*, $crate::dat::terminal::DANGER);
-    }
+    });
   };
 }
 
@@ -207,8 +219,8 @@ macro_rules! fb0_danger {
 #[macro_export]
 macro_rules! fb0_danger_ln {
   ($($arg:tt)*) => {
-    if let Some(fb) = unsafe { $crate::dev::framebuffer::fb0::FRONT_BUFFER.as_mut() } {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
       fb.write_string(concat!("DANGER: ", $($arg)*), $crate::dat::terminal::DANGER);
-    }
+    });
   };
 }
