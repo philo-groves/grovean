@@ -1,4 +1,5 @@
 use crate::dev::framebuffer::Framebuffer;
+use core::fmt;
 #[cfg(not(test))]
 use font8x8::legacy::BASIC_LEGACY as FONT;
 #[cfg(not(test))]
@@ -126,6 +127,19 @@ impl Framebufferterminal {
         self.write_string("\n", color);
     }
 
+    pub fn write_fmt_with_color(&mut self, args: fmt::Arguments<'_>, color: u32) {
+        let mut writer = ColorWriter {
+            terminal: self,
+            color,
+        };
+        let _ = fmt::write(&mut writer, args);
+    }
+
+    pub fn write_fmt_line_with_color(&mut self, args: fmt::Arguments<'_>, color: u32) {
+        self.write_fmt_with_color(args, color);
+        self.write_string("\n", color);
+    }
+
     /// Scroll the framebuffer up by one cell height
     fn scroll(&mut self) {
         let row_size = self.framebuffer.pitch as usize * self.cell_height as usize;
@@ -145,12 +159,29 @@ impl Framebufferterminal {
     }
 }
 
+struct ColorWriter<'a> {
+    terminal: &'a mut Framebufferterminal,
+    color: u32,
+}
+
+impl fmt::Write for ColorWriter<'_> {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.terminal.write_string(s, self.color);
+        Ok(())
+    }
+}
+
 /// Write INFO string to the framebuffer
 #[macro_export]
 macro_rules! fb0_info {
-  ($($arg:tt)*) => {
+  ($fmt:expr) => {
     $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
-      fb.write_string($($arg)*, $crate::dat::terminal::ON_BACKGROUND);
+      fb.write_fmt_with_color(format_args!(concat!("INFO: ", $fmt)), $crate::dat::terminal::ON_BACKGROUND);
+    });
+  };
+  ($fmt:expr, $($arg:tt)*) => {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
+      fb.write_fmt_with_color(format_args!($fmt, $($arg)*), $crate::dat::terminal::ON_BACKGROUND);
     });
   };
 }
@@ -158,9 +189,19 @@ macro_rules! fb0_info {
 /// Write INFO string to the framebuffer followed by a newline
 #[macro_export]
 macro_rules! fb0_info_ln {
-  ($($arg:tt)*) => {
+  () => {
     $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
-      fb.write_line(concat!("INFO: ", $($arg)*), $crate::dat::terminal::ON_BACKGROUND);
+      fb.write_string("\n", $crate::dat::terminal::ON_BACKGROUND);
+    });
+  };
+  ($fmt:expr) => {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
+      fb.write_fmt_line_with_color(format_args!(concat!("INFO: ", $fmt)), $crate::dat::terminal::ON_BACKGROUND);
+    });
+  };
+  ($fmt:expr, $($arg:tt)*) => {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
+      fb.write_fmt_line_with_color(format_args!($fmt, $($arg)*), $crate::dat::terminal::ON_BACKGROUND);
     });
   };
 }
@@ -168,9 +209,14 @@ macro_rules! fb0_info_ln {
 /// Write DEBUG string to the framebuffer
 #[macro_export]
 macro_rules! fb0_debug {
-  ($($arg:tt)*) => {
+  ($fmt:expr) => {
     $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
-      fb.write_string($($arg)*, $crate::dat::terminal::ACCENT);
+      fb.write_fmt_with_color(format_args!(concat!("DEBUG: ", $fmt)), $crate::dat::terminal::ACCENT);
+    });
+  };
+  ($fmt:expr, $($arg:tt)*) => {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
+      fb.write_fmt_with_color(format_args!($fmt, $($arg)*), $crate::dat::terminal::ACCENT);
     });
   };
 }
@@ -178,9 +224,19 @@ macro_rules! fb0_debug {
 /// Write DEBUG string to the framebuffer followed by a newline
 #[macro_export]
 macro_rules! fb0_debug_ln {
-  ($($arg:tt)*) => {
+  () => {
     $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
-      fb.write_line(concat!("DEBUG: ", $($arg)*), $crate::dat::terminal::ACCENT);
+      fb.write_string("\n", $crate::dat::terminal::ACCENT);
+    });
+  };
+  ($fmt:expr) => {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
+      fb.write_fmt_line_with_color(format_args!(concat!("DEBUG: ", $fmt)), $crate::dat::terminal::ACCENT);
+    });
+  };
+  ($fmt:expr, $($arg:tt)*) => {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
+      fb.write_fmt_line_with_color(format_args!($fmt, $($arg)*), $crate::dat::terminal::ACCENT);
     });
   };
 }
@@ -188,9 +244,14 @@ macro_rules! fb0_debug_ln {
 /// Write WARN string to the framebuffer
 #[macro_export]
 macro_rules! fb0_warn {
-  ($($arg:tt)*) => {
+  ($fmt:expr) => {
     $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
-      fb.write_string($($arg)*, $crate::dat::terminal::WARN);
+      fb.write_fmt_with_color(format_args!(concat!("WARN: ", $fmt)), $crate::dat::terminal::WARN);
+    });
+  };
+  ($fmt:expr, $($arg:tt)*) => {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
+      fb.write_fmt_with_color(format_args!($fmt, $($arg)*), $crate::dat::terminal::WARN);
     });
   };
 }
@@ -198,9 +259,19 @@ macro_rules! fb0_warn {
 /// Write WARN string to the framebuffer followed by a newline
 #[macro_export]
 macro_rules! fb0_warn_ln {
-  ($($arg:tt)*) => {
+  () => {
     $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
-      fb.write_line(concat!("WARN: ", $($arg)*), $crate::dat::terminal::WARN);
+      fb.write_string("\n", $crate::dat::terminal::WARN);
+    });
+  };
+  ($fmt:expr) => {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
+      fb.write_fmt_line_with_color(format_args!(concat!("WARN: ", $fmt)), $crate::dat::terminal::WARN);
+    });
+  };
+  ($fmt:expr, $($arg:tt)*) => {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
+      fb.write_fmt_line_with_color(format_args!($fmt, $($arg)*), $crate::dat::terminal::WARN);
     });
   };
 }
@@ -208,9 +279,14 @@ macro_rules! fb0_warn_ln {
 /// Write DANGER string to the framebuffer
 #[macro_export]
 macro_rules! fb0_danger {
-  ($($arg:tt)*) => {
+  ($fmt:expr) => {
     $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
-      fb.write_string($($arg)*, $crate::dat::terminal::DANGER);
+      fb.write_fmt_with_color(format_args!(concat!("DANGER: ", $fmt)), $crate::dat::terminal::DANGER);
+    });
+  };
+  ($fmt:expr, $($arg:tt)*) => {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
+      fb.write_fmt_with_color(format_args!($fmt, $($arg)*), $crate::dat::terminal::DANGER);
     });
   };
 }
@@ -218,9 +294,19 @@ macro_rules! fb0_danger {
 /// Write DANGER string to the framebuffer followed by a newline
 #[macro_export]
 macro_rules! fb0_danger_ln {
-  ($($arg:tt)*) => {
+  () => {
     $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
-      fb.write_string(concat!("DANGER: ", $($arg)*), $crate::dat::terminal::DANGER);
+      fb.write_string("\n", $crate::dat::terminal::DANGER);
+    });
+  };
+  ($fmt:expr) => {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
+      fb.write_fmt_line_with_color(format_args!(concat!("DANGER: ", $fmt)), $crate::dat::terminal::DANGER);
+    });
+  };
+  ($fmt:expr, $($arg:tt)*) => {
+    $crate::dev::framebuffer::fb0::with_front_buffer(|fb| {
+      fb.write_fmt_line_with_color(format_args!($fmt, $($arg)*), $crate::dat::terminal::DANGER);
     });
   };
 }

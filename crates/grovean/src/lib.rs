@@ -36,7 +36,24 @@ static _END_MARKER: limine::request::RequestsEndMarker = limine::request::Reques
 pub unsafe extern "C" fn _start() -> ! {
     init();
 
-    info_ln!("hello framebuffer");
+    memory::memory_map::with_boot_memory_map(|memory_map| {
+        fb0_info_ln!(
+            "memory map: {} regions, usable={} bytes",
+            memory_map.regions().len(),
+            memory_map.usable_memory_bytes()
+        );
+
+        for region in memory_map.regions() {
+            let end = region.base + region.length;
+            fb0_info_ln!(
+                "  base={:#018x} end={:#018x} len={:#010x} kind={:?}",
+                region.base,
+                end,
+                region.length,
+                region.kind
+            );
+        }
+    });
 
     hlt_loop()
 }
