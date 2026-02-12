@@ -8,4 +8,4 @@ members = [
 
 [workspace.dependencies]
 limine = "0.5.0"
-kunit = { path = "../kseries/kunit", version = "0.1.1" }
+kunit = "0.1.1" # { path = "../kseries/kunit", version = "0.1.1" }
