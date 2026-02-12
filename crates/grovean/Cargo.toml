@@ -22,7 +22,7 @@ pic8259 = "0.10.1"
 pc-keyboard = "0.7.0"
 
 [dev-dependencies]
-kunit = "0.1.0"
+kunit = { path = "../../../kseries/kunit", version = "0.1.0" }
 
 [lib]
 doctest = false # disable doctests and their log outputs (we have no doctests)

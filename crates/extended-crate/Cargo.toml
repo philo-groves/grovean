@@ -7,7 +7,7 @@ edition = "2024"
 limine = { workspace = true }
 
 [dev-dependencies]
-kunit = "0.1.0"
+kunit = { path = "../../../kseries/kunit", version = "0.1.0" }
 
 [lib]
 doctest = false # disable doctests and their log outputs (we have no doctests)

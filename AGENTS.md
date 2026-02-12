@@ -51,6 +51,7 @@ Keep this file current as source-of-truth guidance for future sessions.
 - Test: `cargo test --target linker/<arch>-grovean.json`
 - Do not run plain `cargo check` for kernel verification; always pass a valid kernel target JSON.
 - Runner for `target_os = "none"` is configured as `k1` in `.cargo/config.toml`.
+- Kernel targets currently pass `-Z ub-checks=no` via `.cargo/config.toml` to avoid high-half pointer UB-check traps during kernel/test execution.
 
 ## CI Notes
 - GitHub Actions uses shared `kunit` workflow (`.github/workflows/test.yml`).
@@ -78,6 +79,7 @@ Keep this file current as source-of-truth guidance for future sessions.
 - Init invariant: `memory::init()` initializes `memory_map` before `frame_allocator`; paging must allocate frames through `memory::frame_allocator` APIs.
 - Temporary runtime guard: boot path currently skips `frame_allocator::init()` on both x86_64 and aarch64 while stabilizing startup regressions.
 - Temporary compile guard: `memory::frame_allocator` is currently compiled for tests and x86_64 only; aarch64 runtime excludes it until startup is stable.
+- Linker invariant: keep test/boot entry symbol `_start` in `.text._start` and place that section first in linker scripts so early boot mapping includes initial control flow.
 
 ## Auto-Update Protocol (required)
 When any important rule or decision changes, update this file in the same change set.
