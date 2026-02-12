@@ -83,7 +83,7 @@ cat >> ~/.bashrc <<'EOF'
 
 # Kernel helper
 kernel() {
-  bash "$HOME/Projects/grovean/kernel" "$@"
+  bash "$HOME/projects/grovean/kernel" "$@"
 }
 EOF
 
