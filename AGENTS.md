@@ -14,6 +14,14 @@ Keep this file current as source-of-truth guidance for future sessions.
 - Prefer running from repo root in WSL: `~/Projects/grovean`.
 - Use the `kernel` helper for normal build/run/test flows and cleanup (`kernel clean`).
 - Keep architecture explicit on every run/test command.
+- If `kernel` is not on PATH or not executable in the current shell, invoke it as `bash ~/Projects/grovean/kernel ...`.
+
+## Test Flow Notes
+- Standard workspace test flow: `kernel clean` then `kernel test --x86_64` (or `--aarch64` as needed).
+- After `kernel test`, inspect normalized outputs under `.k1/testing/*.jsonl`.
+- Also check `.k1/logs/k1-test-*.log` when diagnosing missing or incomplete normalized test records.
+- Treat explicit `failed > 0` or test entries with non-pass results as failures.
+- If a `test_group` reports a non-zero `test_count` but lacks per-test lines in `.k1/testing`, flag it as a possible test-output normalization/capture issue even if runner exits successfully.
 
 ## `kernel` Script (concise usage)
 - Usage:
@@ -59,15 +67,17 @@ Keep this file current as source-of-truth guidance for future sessions.
 ## Kernel Development Priorities (current)
 - Preferred sequence:
   1. Normalize boot memory map.
-  2. Implement physical frame allocator.
-  3. Implement paging manager on top of owned frames.
-  4. Add/expand kernel heap integration.
+  2. Integrate paging manager on top of owned physical frames.
+  3. Add/expand kernel heap integration.
 - Do not rely long-term on bootloader-provided page tables beyond early boot.
 
 ## Engineering Guardrails
 - Cross-arch parity: any memory-management API change should compile for both x86_64 and aarch64.
 - Test expectation: run at least one target locally before finalizing major kernel-memory changes.
 - Boot invariant: initialize and normalize Limine memory map (`grovean::memory::init`) before allocator or paging setup.
+- Init invariant: `memory::init()` initializes `memory_map` before `frame_allocator`; paging must allocate frames through `memory::frame_allocator` APIs.
+- Temporary runtime guard: boot path currently skips `frame_allocator::init()` on both x86_64 and aarch64 while stabilizing startup regressions.
+- Temporary compile guard: `memory::frame_allocator` is currently compiled for tests and x86_64 only; aarch64 runtime excludes it until startup is stable.
 
 ## Auto-Update Protocol (required)
 When any important rule or decision changes, update this file in the same change set.
